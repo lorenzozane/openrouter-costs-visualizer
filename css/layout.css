@@ -133,13 +133,15 @@
 		grid-template-rows: none;
 		max-height: none;
 	}
+	.left-panel {
+		height: clamp(240px, 55vh, 560px);
+	}
 	.left-bottom {
 		grid-template-columns: 1fr;
 		height: auto;
 		margin-top: 12px;
 	}
 	.card { height: 280px; min-height: 280px; }
-	.card canvas { height: 220px !important; max-height: 220px !important; }
 
 	.kpis { grid-template-columns: repeat(2, 1fr); }
 
@@ -158,8 +160,8 @@
 		overflow: visible;
 	}
 
-	/* Header stacking */
-	.topbar { flex-direction: column; align-items: stretch; }
+	/* Let the taller responsive header scroll with the rest of the page. */
+	.topbar { position: static; flex-direction: column; align-items: stretch; }
 	.brand { align-self: flex-start; margin-bottom: 6px; }
 
 	/* Components within layout on small screens */
@@ -174,7 +176,6 @@
 	.control input:not([type="checkbox"]):not([type="radio"]), .control select { width: 100%; min-width: 0; }
 
 	.file-control-layout { flex-wrap: wrap; width: 100%; }
-	.files-list-compact, .drop-zone { width: 100%; min-width: 0; }
 
 	.controls .btn { align-self: stretch; }
 
@@ -188,10 +189,14 @@
 		flex-wrap: wrap;
 	}
 
-	.files-list-compact, .drop-zone {
-		width: auto;
-		flex: 1 1 180px;
-		min-width: 120px;
+	.files-list-compact {
+		flex: 0 0 auto;
+		width: max-content;
+		max-width: 100%;
+	}
+	.drop-zone {
+		flex: 1 1 220px;
+		min-width: 220px;
 		max-width: 100%;
 	}
 	.date-row .control { flex: 1 1 120px; min-width: 100px; max-width: 100%; }

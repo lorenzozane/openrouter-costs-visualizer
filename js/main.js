@@ -18,6 +18,17 @@ function clearUI() {
 	if (tfoot) tfoot.innerHTML = '';
 	if (state.charts.bar) { state.charts.bar.destroy(); state.charts.bar = null; }
 	if (state.charts.line) { state.charts.line.destroy(); state.charts.line = null; }
+	const hasFiles = state.files.length > 0;
+	elements.emptyStateTitle.textContent = hasFiles ? 'No matching records' : 'Add your OpenRouter CSV files';
+	elements.emptyStateDetail.textContent = hasFiles
+		? 'Adjust the date range or model selection, then apply the filters again.'
+		: 'Drop files above or click to browse to see costs, models, and trends.';
+	elements.dataEmptyState.hidden = false;
+	elements.costTable.hidden = true;
+	elements.chartEmptyStates.forEach(el => {
+		el.textContent = hasFiles ? 'No matching data to chart.' : 'Add files to see this chart.';
+		el.hidden = false;
+	});
 }
 
 function renderKPIs(rows) {
@@ -45,6 +56,9 @@ function renderAll(rows) {
 		clearUI();
 		return;
 	}
+	elements.dataEmptyState.hidden = true;
+	elements.costTable.hidden = false;
+	elements.chartEmptyStates.forEach(el => { el.hidden = true; });
 	renderKPIs(rows);
 	renderTable(rows);
 	applyColumnVisibility();
@@ -73,9 +87,9 @@ function onFilesChanged() {
 	applyFilters(renderAll);
 }
 
-function setupHeaderTooltips() {
+function setupTooltips() {
 	const tooltip = elements.tableTooltip;
-	const ths = document.querySelectorAll('#costTable th[data-tooltip]');
+	const ths = document.querySelectorAll('[data-tooltip]');
 	if (!tooltip || !ths.length) return;
 
 	ths.forEach(th => {
@@ -113,7 +127,7 @@ initFilters({ onApply: renderAll });
 initColumnFilterUI();
 setupTableSorting(renderAll);
 applyColumnVisibility();
-setupHeaderTooltips();
+setupTooltips();
 
 // keep files panel positioned if open on resize
 window.addEventListener('resize', positionFilesContainer);

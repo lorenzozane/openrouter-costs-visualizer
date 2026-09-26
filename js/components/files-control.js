@@ -80,32 +80,50 @@ function updateFilesListUI(onChange) {
 	if (!elements.filesContainer.hasAttribute('hidden')) positionFilesContainer();
 }
 
-function addFile(file, onChange) {
+function addFile(file, onChange, reportError) {
 	const fileId = `file-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 	const reader = new FileReader();
 	reader.onload = () => {
 		try {
 			const { rows } = parseCSV(reader.result || '');
+			if (rows.length === 0) throw new Error('No valid usage records were found.');
 			state.files.push({ id: fileId, name: file.name, data: rows });
 			updateFilesListUI(onChange);
+			updateDropZoneState(state.files.length);
 			onChange?.();
 		} catch (e) {
-			alert(String(e?.message || e));
+			reportError(`${file.name}: ${String(e?.message || e)}`);
 		}
 	};
-	reader.readAsText(file);
+	reader.onerror = () => reportError(`${file.name}: Could not read this file.`);
+	try {
+		reader.readAsText(file);
+	} catch (e) {
+		reportError(`${file.name}: ${String(e?.message || e)}`);
+	}
 }
 
 function handleFiles(files, onChange) {
 	if (!files || !files.length) return;
+	const errors = [];
+	elements.fileFeedback.hidden = true;
+	elements.fileFeedback.textContent = '';
+	const reportError = message => {
+		errors.push(message);
+		elements.fileFeedback.textContent = errors.join('\n');
+		elements.fileFeedback.hidden = false;
+	};
 	Array.from(files).forEach(f => {
-		if (f.name.toLowerCase().endsWith('.csv')) addFile(f, onChange);
+		if (f.name.toLowerCase().endsWith('.csv')) addFile(f, onChange, reportError);
+		else reportError(`${f.name}: Choose a CSV file.`);
 	});
-	updateDropZoneState(files.length);
+	updateDropZoneState(state.files.length);
 }
 
 export function clearAllFiles(onChange) {
 	state.files = [];
+	elements.fileFeedback.hidden = true;
+	elements.fileFeedback.textContent = '';
 	updateFilesListUI(onChange);
 	updateDropZoneState(0);
 	onChange?.();
@@ -116,6 +134,7 @@ export function initFilesControl(onChange) {
 	elements.file?.addEventListener('change', e => {
 		const files = e.target.files;
 		if (files && files.length > 0) handleFiles(files, onChange);
+		e.target.value = '';
 	});
 
 	// drop zone

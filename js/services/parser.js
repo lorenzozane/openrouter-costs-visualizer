@@ -57,8 +57,8 @@ export function parseCSV(csvText) {
 		ttft: header.indexOf('time_to_first_token_ms')
 	};
 
-	if (COL.id === -1 || COL.created === -1 || COL.model === -1) {
-		throw new Error('CSV is missing required columns: generation_id, created_at, or model_permaslug');
+	if (COL.id === -1 || COL.created === -1 || COL.model === -1 || COL.total === -1) {
+		throw new Error('CSV is missing a required column: generation_id, created_at, model_permaslug, or cost_total');
 	}
 
 	const out = [];

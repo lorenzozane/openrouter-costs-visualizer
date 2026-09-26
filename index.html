@@ -46,8 +46,9 @@
 						</div>
 						<input id="csvFile" type="file" accept=".csv" multiple hidden />
 					</div>
-				</div>
-				<!-- Files container is now separate and will appear as a floating panel -->
+					</div>
+					<div id="fileFeedback" class="file-feedback" role="alert" hidden></div>
+					<!-- Files container is now separate and will appear as a floating panel -->
 				<div id="filesContainer" class="files-container-panel" hidden></div>
 			</div>
 
@@ -80,7 +81,7 @@
 						<input id="modelSearch" type="text" placeholder="Search models..." />
 						<div class="spacer"></div>
 						<button id="modelSelectAll" class="btn mini" type="button">All</button>
-						<button id="modelSelectNone" class="btn mini" type="button">None</button>
+						<button id="modelSelectNone" class="btn mini" type="button">Clear selection</button>
 					</div>
 					<div class="model-list" id="modelList"></div>
 				</div>
@@ -107,7 +108,11 @@
 						</div>
 					</div>
 					<div class="table-wrap">
-						<table id="costTable">
+						<div id="dataEmptyState" class="data-empty-state">
+							<strong id="emptyStateTitle">Add your OpenRouter CSV files</strong>
+							<span id="emptyStateDetail">Drop files above or click to browse to see costs, models, and trends.</span>
+						</div>
+						<table id="costTable" hidden>
 							<thead>
 								<tr>
 									<th data-col="model">Model</th>
@@ -141,12 +146,12 @@
 				<div class="left-bottom">
 					<div class="card">
 						<h3>Cost by Model</h3>
-						<div class="chart-area"><canvas id="barCostByModel"></canvas></div>
+						<div class="chart-area"><canvas id="barCostByModel"></canvas><div class="chart-empty">Add files to see this chart.</div></div>
 					</div>
 
 					<div class="card">
 						<h3>Cost Over Time</h3>
-						<div class="chart-area"><canvas id="lineCostOverTime"></canvas></div>
+						<div class="chart-area"><canvas id="lineCostOverTime"></canvas><div class="chart-empty">Add files to see this chart.</div></div>
 					</div>
 				</div>
 			</div>
@@ -155,8 +160,8 @@
 				<section class="right-panel">
 					<div class="kpis">
 						<div class="kpi"><div class="kpi-title">Requests</div><div class="kpi-value" id="kpiRequests">-</div></div>
-						<div class="kpi"><div class="kpi-title">Total OpenRouter Cost</div><div class="kpi-value" id="kpiOpenRouterCost">-</div></div>
-						<div class="kpi"><div class="kpi-title">Total Cost</div><div class="kpi-value" id="kpiTotalCost">-</div></div>
+						<div class="kpi"><div class="kpi-title" data-tooltip="Sum of the CSV's cost_total field. BYOK costs are not included.">Total OpenRouter Cost</div><div class="kpi-value" id="kpiOpenRouterCost">-</div></div>
+						<div class="kpi"><div class="kpi-title" data-tooltip="Includes OpenRouter cost, BYOK usage, web search, cache adjustments, and file processing costs.">Total Cost</div><div class="kpi-value" id="kpiTotalCost">-</div></div>
 						<div class="kpi"><div class="kpi-title">Avg Cost / Req</div><div class="kpi-value" id="kpiAvgCost">-</div></div>
 						<div class="kpi"><div class="kpi-title">Time Window</div><div class="kpi-value" id="kpiWindow">-</div></div>
 					</div>

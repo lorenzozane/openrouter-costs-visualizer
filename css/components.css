@@ -86,6 +86,16 @@
 	height: 220px;
 	min-width: 0;
 }
+.chart-empty {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	padding: 16px;
+	color: var(--muted);
+	font-size: 13px;
+	text-align: center;
+}
 .card canvas { 
 	width: 100% !important; 
 	height: 100% !important; 
@@ -119,6 +129,7 @@
 	font-weight: 600;
 	line-height: 1.2;
 }
+.kpi-title[data-tooltip] { cursor: help; }
 
 /* Notes and utilities */
 .notes { margin: 8px 0 0 18px; padding: 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
@@ -148,6 +159,17 @@
 
 /* Files controls (compact bar + floating panel) */
 .file-control-layout { display: flex; align-items: center; gap: 8px; position: relative; }
+.file-feedback {
+	max-width: 480px;
+	padding: 8px 10px;
+	border: 1px solid rgba(255,107,107,0.35);
+	border-radius: 8px;
+	background: rgba(255,107,107,0.08);
+	color: #ffd6d6;
+	font-size: 12px;
+	line-height: 1.4;
+	white-space: pre-line;
+}
 
 .files-list-compact {
     padding: 6px 10px;

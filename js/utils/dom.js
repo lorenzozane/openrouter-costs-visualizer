@@ -3,6 +3,7 @@ export const elements = {
 	dropZone: document.getElementById('dropZone'),
 	filesList: document.getElementById('filesList'),
 	filesContainer: document.getElementById('filesContainer'),
+	fileFeedback: document.getElementById('fileFeedback'),
 	filesCount: document.querySelector('.files-count'),
 	uniqueRecords: document.getElementById('uniqueRecords'),
 	clearAllFiles: document.getElementById('clearAllFiles'),
@@ -34,6 +35,11 @@ export const elements = {
 	kpiWin: document.getElementById('kpiWindow'),
 
 	tableBody: document.querySelector('#costTable tbody'),
+	costTable: document.getElementById('costTable'),
+	dataEmptyState: document.getElementById('dataEmptyState'),
+	emptyStateTitle: document.getElementById('emptyStateTitle'),
+	emptyStateDetail: document.getElementById('emptyStateDetail'),
+	chartEmptyStates: document.querySelectorAll('.chart-empty'),
 	barCanvas: document.getElementById('barCostByModel'),
 	lineCanvas: document.getElementById('lineCostOverTime'),
 	tableTooltip: document.getElementById('tableTooltip')

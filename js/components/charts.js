@@ -1,5 +1,6 @@
 import { elements } from '../utils/dom.js';
 import { state, fmtUSD } from '../state.js';
+import { formatDisplayDate } from '../utils/dates.js';
 
 export function renderBarByModel(rows) {
 	const totals = new Map();
@@ -34,7 +35,7 @@ export function renderLineOverTime(rows) {
 		bucket.set(key, (bucket.get(key) || 0) + r.total);
 	}
 	const sorted = [...bucket.entries()].sort((a,b) => a[0].localeCompare(b[0]));
-	const labels = sorted.map(([k]) => k);
+	const labels = sorted.map(([k]) => `${formatDisplayDate(k.slice(0, 10))} ${k.slice(11)}`);
 	const data = sorted.map(([_, v]) => v);
 
 	if (state.charts.line) { state.charts.line.destroy(); state.charts.line = null; }

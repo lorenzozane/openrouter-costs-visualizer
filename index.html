@@ -19,14 +19,18 @@
 	<link rel="stylesheet" href="./css/components.css" />
 	<link rel="stylesheet" href="./css/table.css" />
 	<!-- Charts -->
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+	<script src="./assets/chart.umd.min.js"></script>
 	<script type="module" src="./js/main.js"></script>
 </head>
 <body>
 	<header class="topbar">
 		<div class="brand">OpenRouter Costs Visualizer</div>
+		<nav class="source-tabs" aria-label="Data source">
+			<button id="csvViewBtn" class="btn source-tab active" type="button" aria-current="page">CSV files</button>
+			<button id="apiViewBtn" class="btn source-tab" type="button">API sync</button>
+		</nav>
 
-		<div class="controls">
+		<div class="controls" id="csvControls">
 			<div class="control">
 				<div class="file-control-layout">
 					<div id="filesList" class="files-list-compact" hidden>
@@ -57,12 +61,12 @@
 			<div class="date-row">
 				<label class="control">
 					<span>From</span>
-					<input id="fromDate" type="date" />
+					<span class="date-input"><input id="fromDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="From date, DD/MM/YYYY" /><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose From date" /></span>
 				</label>
 
 				<label class="control">
 					<span>To</span>
-					<input id="toDate" type="date" />
+					<span class="date-input"><input id="toDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="To date, DD/MM/YYYY" /><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose To date" /></span>
 				</label>
 			</div>
 
@@ -89,7 +93,67 @@
 		</div>
 	</header>
 
-	<main class="layout">
+	<section id="apiView" class="api-view" hidden aria-labelledby="apiHeading">
+		<div class="api-intro">
+			<div>
+				<h1 id="apiHeading">API sync</h1>
+				<p>Explore daily model totals from your OpenRouter account. CSV files remain available in the other view.</p>
+			</div>
+			<div class="api-actions">
+				<button id="apiExportBtn" class="btn" type="button" disabled>Export synced data (CSV)</button>
+				<label class="btn api-import-label" for="apiCsvFile">Import synced CSV</label>
+				<input id="apiCsvFile" type="file" accept=".csv,text/csv" hidden>
+				<button id="apiClearBtn" class="btn" type="button" disabled>Clear data</button>
+			</div>
+		</div>
+		<section class="api-connect" aria-labelledby="apiConnectHeading">
+			<div class="api-connect-copy">
+				<h2 id="apiConnectHeading">Sync from OpenRouter</h2>
+				<p><strong>A management key has administrative access:</strong> it can create, edit, and delete API keys in your OpenRouter account. Create one with an expiration date. This open-source website runs in your browser, sends the key directly to OpenRouter for this sync, and does not save it. You can <a href="https://github.com/lorenzozane/openrouter-costs-visualizer" target="_blank" rel="noopener noreferrer">inspect the source code</a> and <a href="https://openrouter.ai/settings/management-keys" target="_blank" rel="noopener noreferrer">manage your keys at OpenRouter</a>.</p>
+				<p>You must enter the key again for another sync. Imported usage stays in this tab until you clear it, refresh, or close the tab; export a CSV to keep it.</p>
+				<p class="api-note">Up to 365 days per import. Large ranges are fetched in smaller parts. API results are daily aggregates, not individual requests.</p>
+			</div>
+			<form id="apiSyncForm" autocomplete="off">
+				<label class="control">Management key<input id="apiKey" type="password" autocomplete="off" spellcheck="false" required placeholder="Paste management key"></label>
+				<label class="control">From (UTC)<span class="date-input"><input id="apiFrom" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="From date (UTC), DD/MM/YYYY" required><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose From date (UTC)"></span></label>
+				<label class="control">To (UTC)<span class="date-input"><input id="apiTo" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="To date (UTC), DD/MM/YYYY" required><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose To date (UTC)"></span></label>
+				<div class="api-sync-actions">
+					<button id="apiSyncBtn" class="btn primary" type="submit">Sync data</button>
+					<button id="apiCancelBtn" class="btn" type="button" hidden>Cancel</button>
+				</div>
+			</form>
+		</section>
+		<p id="apiStatus" class="api-status" role="status" aria-live="polite">No API data loaded. Sync or import an exported CSV.</p>
+		<div id="apiResults" hidden>
+			<div class="api-filters">
+				<label class="control">Filter models<input id="apiModelSearch" type="search" placeholder="Search models"></label>
+				<label class="control">From (UTC)<span class="date-input"><input id="apiFilterFrom" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="Filter from date (UTC), DD/MM/YYYY"><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose filter From date (UTC)"></span></label>
+				<label class="control">To (UTC)<span class="date-input"><input id="apiFilterTo" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="Filter to date (UTC), DD/MM/YYYY"><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose filter To date (UTC)"></span></label>
+				<button id="apiResetFilters" class="btn" type="button">Reset filters</button>
+			</div>
+			<p id="apiFilterEmpty" class="api-status" hidden>No matching daily model totals. Adjust the filters.</p>
+			<div id="apiWorkspace" class="api-workspace">
+				<div class="api-main">
+					<section class="api-table-panel" aria-labelledby="apiTableHeading">
+						<div class="table-header"><h2 id="apiTableHeading">Costs by model</h2></div>
+						<div id="apiTableWrap" class="api-table-wrap"><table id="apiTable">
+							<thead><tr><th>Model</th><th>Requests</th><th>Total cost</th><th>OpenRouter credits</th><th>BYOK inference</th><th>Prompt tokens</th><th>Completion tokens</th><th>Reasoning tokens</th></tr></thead>
+							<tbody></tbody>
+						</table></div>
+					</section>
+					<div id="apiCharts" class="api-charts">
+						<div class="card"><h3>Cost by model</h3><div class="chart-area"><canvas id="apiModelChart"></canvas></div></div>
+						<div class="card"><h3>Cost over time (UTC)</h3><div class="chart-area"><canvas id="apiTimeChart"></canvas></div></div>
+					</div>
+				</div>
+				<aside class="api-summary-panel" aria-label="Analytics summary">
+					<div id="apiSummary" class="api-summary kpis"></div>
+				</aside>
+			</div>
+		</div>
+	</section>
+
+	<main class="layout" id="csvView">
 		<section class="columns">
 			<div class="left-col">
 				<section class="left-panel">
@@ -170,9 +234,9 @@
 				<!-- Privacy notice card -->
 				<div class="card privacy-card">
 					<div class="privacy-content">
-						Your files are never stored or sent anywhere.<br>
+						Your CSV files are never stored or sent anywhere.<br>
 						Processing happens only in your browser.<br>
-						Your column visibility settings are saved locally.
+						Your column visibility and selected view are saved locally.
 					</div>
 				</div>
 

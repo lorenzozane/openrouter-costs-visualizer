@@ -1,6 +1,7 @@
 import { elements } from '../utils/dom.js';
 import { state, COL_KEYS, COL_LABELS, fmtUSD, fmtUSD_4dec, fmtUSD_6dec, fmtInt, DEFAULT_COL_VISIBILITY } from '../state.js';
 import { saveColumnVisibility } from '../services/storage.js';
+import { escapeHTML } from '../services/parser.js';
 
 function updateSortIcons() {
 	const SVG_UP = `<svg width="16" height="16" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;" xmlns="http://www.w3.org/2000/svg"><polyline points="4,10 8,6 12,10" fill="none" stroke="#bfc9d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -221,7 +222,7 @@ export function renderTable(rows) {
 		const avgTrRow = v.req > 0 ? Math.round(v.tr / v.req) : 0;
 		const tr = document.createElement('tr');
 		tr.innerHTML = `
-			<td data-col="model" class="model-col mono">${model}</td>
+			<td data-col="model" class="model-col mono">${escapeHTML(model)}</td>
 			<td data-col="req" class="mono">${v.req === 0 ? `<span class="zero-value">${fmtInt.format(v.req)}</span>` : fmtInt.format(v.req)}</td>
 			<td data-col="total" class="mono">${v.total === 0 ? `<span class="zero-value">${fmtUSD_4dec.format(v.total)}</span>` : fmtUSD_4dec.format(v.total)}</td>
 			<td data-col="byok" class="mono">${v.byok === 0 ? `<span class="zero-value">${fmtUSD.format(v.byok)}</span>` : fmtUSD.format(v.byok)}</td>

@@ -1,5 +1,7 @@
 import { elements } from '../utils/dom.js';
 import { state } from '../state.js';
+import { escapeHTML } from '../services/parser.js';
+import { getDateValue, setDateValue } from '../utils/dates.js';
 
 export function updateModelButtonCaption() {
 	if (!elements.modelBtn) return;
@@ -16,8 +18,8 @@ export function populateModelFilter(models) {
 		const wrap = document.createElement('label');
 		wrap.className = 'model-item';
 		wrap.innerHTML = `
-			<input type="checkbox" value="${m}" id="${id}" />
-			<span class="mono">${m}</span>
+			<input type="checkbox" value="${escapeHTML(m)}" id="${id}" />
+			<span class="mono">${escapeHTML(m)}</span>
 		`;
 		const input = wrap.querySelector('input');
 		input.addEventListener('change', () => {
@@ -130,10 +132,11 @@ export function dateEndInclusive(dateStr) {
 
 export function applyFilters(renderAll) {
 	if (state.rows.length === 0) { renderAll([]); return; }
+	if (!elements.from.reportValidity() || !elements.to.reportValidity()) return;
 	const sel = getSelectedModels();
 	const hasSel = sel.length > 0;
-	const from = dateStartInclusive(elements.from.value);
-	const to = dateEndInclusive(elements.to.value);
+	const from = dateStartInclusive(getDateValue(elements.from));
+	const to = dateEndInclusive(getDateValue(elements.to));
 
 	state.filtered = state.rows.filter(r => {
 		if (hasSel && !sel.includes(r.model)) return false;
@@ -146,8 +149,8 @@ export function applyFilters(renderAll) {
 }
 
 export function resetFilters(renderAll) {
-	elements.from.value = '';
-	elements.to.value = '';
+	setDateValue(elements.from);
+	setDateValue(elements.to);
 	if (elements.modelFilter?.options) for (const opt of elements.modelFilter.options) opt.selected = false;
 	state.selectedModels.clear();
 	for (const cb of elements.modelList?.querySelectorAll?.('input[type="checkbox"]') || []) cb.checked = false;

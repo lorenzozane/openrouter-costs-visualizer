@@ -80,11 +80,15 @@ function updateFilesListUI(onChange) {
 	if (!elements.filesContainer.hasAttribute('hidden')) positionFilesContainer();
 }
 
-function addFile(file, onChange, reportError) {
+function addFile(file, onChange, reportError, onAnalyticsCSV) {
 	const fileId = `file-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 	const reader = new FileReader();
 	reader.onload = () => {
 		try {
+			if (String(reader.result || '').replace(/^\uFEFF/, '').startsWith('date_utc,model,request_count,')) {
+				onAnalyticsCSV(reader.result || '');
+				return;
+			}
 			const { rows } = parseCSV(reader.result || '');
 			if (rows.length === 0) throw new Error('No valid usage records were found.');
 			state.files.push({ id: fileId, name: file.name, data: rows });
@@ -103,7 +107,7 @@ function addFile(file, onChange, reportError) {
 	}
 }
 
-function handleFiles(files, onChange) {
+function handleFiles(files, onChange, onAnalyticsCSV) {
 	if (!files || !files.length) return;
 	const errors = [];
 	elements.fileFeedback.hidden = true;
@@ -114,7 +118,7 @@ function handleFiles(files, onChange) {
 		elements.fileFeedback.hidden = false;
 	};
 	Array.from(files).forEach(f => {
-		if (f.name.toLowerCase().endsWith('.csv')) addFile(f, onChange, reportError);
+		if (f.name.toLowerCase().endsWith('.csv')) addFile(f, onChange, reportError, onAnalyticsCSV);
 		else reportError(`${f.name}: Choose a CSV file.`);
 	});
 	updateDropZoneState(state.files.length);
@@ -129,11 +133,11 @@ export function clearAllFiles(onChange) {
 	onChange?.();
 }
 
-export function initFilesControl(onChange) {
+export function initFilesControl(onChange, onAnalyticsCSV) {
 	// input
 	elements.file?.addEventListener('change', e => {
 		const files = e.target.files;
-		if (files && files.length > 0) handleFiles(files, onChange);
+		if (files && files.length > 0) handleFiles(files, onChange, onAnalyticsCSV);
 		e.target.value = '';
 	});
 
@@ -151,7 +155,7 @@ export function initFilesControl(onChange) {
 		e.preventDefault();
 		elements.dropZone.classList.remove('drag-over');
 		const files = e.dataTransfer?.files;
-		if (files && files.length > 0) handleFiles(files, onChange);
+		if (files && files.length > 0) handleFiles(files, onChange, onAnalyticsCSV);
 	});
 
 	// clear button

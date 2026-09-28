@@ -5,6 +5,8 @@ import { initFilesControl, positionFilesContainer } from './components/files-con
 import { initFilters, populateModelFilter, applyFilters } from './components/filters.js';
 import { initColumnFilterUI, setupTableSorting, renderTable, applyColumnVisibility } from './components/table.js';
 import { renderBarByModel, renderLineOverTime } from './components/charts.js';
+import { initAnalyticsView } from './components/analytics.js';
+import { initDateControls } from './utils/dates.js';
 
 // KPIs + clear and render pipeline
 function clearUI() {
@@ -42,7 +44,7 @@ function renderKPIs(rows) {
 	const avg = count ? totalOpenRouter / count : 0;
 	const minD = rows[0].date;
 	const maxD = rows[rows.length - 1].date;
-	const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+	const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 
 	elements.kpiReq.textContent = fmtInt.format(count);
 	elements.kpiOpenRouterCost.textContent = fmtUSD_4dec.format(totalOpenRouter);
@@ -121,8 +123,10 @@ function setupTooltips() {
 }
 
 // Initialize
+initDateControls();
 clearUI();
-initFilesControl(onFilesChanged);
+const analyticsView = initAnalyticsView();
+initFilesControl(onFilesChanged, analyticsView.loadAnalyticsCSV);
 initFilters({ onApply: renderAll });
 initColumnFilterUI();
 setupTableSorting(renderAll);

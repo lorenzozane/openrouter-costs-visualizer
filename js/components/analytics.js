@@ -134,23 +134,28 @@ export function loadAnalyticsCSV(text) {
 export function initAnalyticsView() {
 	const csvBtn = byId('csvViewBtn');
 	const apiBtn = byId('apiViewBtn');
-	function switchView(api, remember = true) {
-		byId('apiView').hidden = !api;
-		byId('csvView').hidden = api;
-		byId('csvControls').hidden = api;
-		csvBtn.classList.toggle('active', !api);
-		apiBtn.classList.toggle('active', api);
-		csvBtn.toggleAttribute('aria-current', !api);
-		apiBtn.toggleAttribute('aria-current', api);
-		if (remember) {
-			try { localStorage.setItem(VIEW_STORAGE_KEY, api ? 'api' : 'csv'); } catch { /* Storage may be unavailable. */ }
+	const keyBtn = byId('keyViewBtn');
+	function switchView(view, remember = true) {
+		byId('apiView').hidden = view !== 'api';
+		byId('csvView').hidden = view !== 'csv';
+		byId('keyView').hidden = view !== 'key';
+		byId('csvControls').hidden = view !== 'csv';
+		for (const [name, button] of [['csv', csvBtn], ['api', apiBtn], ['key', keyBtn]]) {
+			button.classList.toggle('active', view === name);
+			button.toggleAttribute('aria-current', view === name);
 		}
-		if (api && rows.length) { modelChart?.resize(); timeChart?.resize(); }
+		if (remember) {
+			try { localStorage.setItem(VIEW_STORAGE_KEY, view); } catch { /* Storage may be unavailable. */ }
+		}
+		if (view === 'api' && rows.length) { modelChart?.resize(); timeChart?.resize(); }
 	}
-	csvBtn.addEventListener('click', () => switchView(false));
-	apiBtn.addEventListener('click', () => switchView(true));
-	try { switchView(localStorage.getItem(VIEW_STORAGE_KEY) === 'api', false); }
-	catch { switchView(false, false); }
+	csvBtn.addEventListener('click', () => switchView('csv'));
+	apiBtn.addEventListener('click', () => switchView('api'));
+	keyBtn.addEventListener('click', () => switchView('key'));
+	try {
+		const saved = localStorage.getItem(VIEW_STORAGE_KEY);
+		switchView(['csv', 'api', 'key'].includes(saved) ? saved : 'csv', false);
+	} catch { switchView('csv', false); }
 
 	const now = new Date();
 	const today = now.toISOString().slice(0, 10);

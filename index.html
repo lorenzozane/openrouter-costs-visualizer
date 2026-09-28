@@ -18,6 +18,7 @@
 	<link rel="stylesheet" href="./css/layout.css" />
 	<link rel="stylesheet" href="./css/components.css" />
 	<link rel="stylesheet" href="./css/table.css" />
+	<link rel="stylesheet" href="./css/key-checker.css" />
 	<!-- Charts -->
 	<script src="./assets/chart.umd.min.js"></script>
 	<script type="module" src="./js/main.js"></script>
@@ -28,6 +29,7 @@
 		<nav class="source-tabs" aria-label="Data source">
 			<button id="csvViewBtn" class="btn source-tab active" type="button" aria-current="page">CSV files</button>
 			<button id="apiViewBtn" class="btn source-tab" type="button">API sync</button>
+			<button id="keyViewBtn" class="btn source-tab" type="button">Key checker</button>
 		</nav>
 
 		<div class="controls" id="csvControls">
@@ -92,6 +94,28 @@
 			</div>
 		</div>
 	</header>
+
+	<main id="keyView" class="key-view" hidden aria-labelledby="keyHeading">
+		<div class="key-page">
+			<div class="key-intro">
+				<h1 id="keyHeading">Check an OpenRouter key</h1>
+				<p>Check a regular API key's status, usage, and spending limit. The request goes directly from your browser to OpenRouter.</p>
+			</div>
+			<form id="keyCheckForm" class="key-form" autocomplete="off">
+				<label class="control" for="checkKey">API key</label>
+				<div class="key-input-row">
+					<input id="checkKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-or-v1-…" required>
+					<button id="keyVisibilityBtn" class="btn" type="button" aria-label="Show key" aria-pressed="false">Show</button>
+				</div>
+				<button id="keyCheckBtn" class="btn primary" type="submit">Check key</button>
+			</form>
+			<div id="keyStatus" class="key-status" role="status" aria-live="polite" hidden></div>
+			<section id="keyResults" class="key-results" aria-label="Key details" hidden>
+				<div class="key-result-grid" id="keyResultGrid"></div>
+			</section>
+			<p class="key-privacy">Queries <code>GET /api/v1/key</code> with your key in an Authorization header. The key is cleared from the input when you check it and is not saved by this site. A key without a spending limit does not expose your account's credit balance here.</p>
+		</div>
+	</main>
 
 	<section id="apiView" class="api-view" hidden aria-labelledby="apiHeading">
 		<div class="api-intro">

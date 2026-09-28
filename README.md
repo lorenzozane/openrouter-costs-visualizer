@@ -11,6 +11,7 @@ Visualize OpenRouter CSV usage costs by model and over time.
 - Settings saved locally
 - Optional OpenRouter Analytics import with daily model totals
 - Export and reimport Analytics data as a separate CSV format
+- Check a regular OpenRouter API key's status, usage, and spending limit
 
 ## Quick start
 - Double-click [index.html](index.html), or
@@ -35,6 +36,8 @@ Browser access to the Analytics API depends on OpenRouter allowing cross-origin 
 All CSV processing happens in your browser. CSV files never leave the machine. Analytics sync sends the entered management key directly to OpenRouter and keeps the resulting usage data in the current tab. The Chart.js script is included in this repository rather than loaded from a CDN.
 
 The selected view and CSV column visibility are saved in browser localStorage. Management keys and imported data are not saved there.
+
+The **Key checker** uses a regular OpenRouter API key with `GET /api/v1/key` directly from the browser. It does not use the management-key-only credits endpoint, and an unlimited key does not reveal the account's credit balance. The input is cleared when a check starts. The site does not save the key and removes any key stored by earlier versions of the checker when the page loads.
 
 ## Contribution
 The extension is built using vanilla JavaScript and HTML/CSS (using chart.js for charts)

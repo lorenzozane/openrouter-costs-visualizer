@@ -1,0 +1,30 @@
+.key-view { width: 100%; flex: 1; padding: clamp(20px, 4vw, 48px) 16px; }
+.key-page { width: min(100%, 720px); margin: 0 auto; }
+.key-intro { margin-bottom: 22px; }
+.key-intro h1 { font-size: clamp(24px, 3vw, 32px); margin: 0 0 8px; }
+.key-intro p, .key-privacy { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; }
+.key-form { display: grid; gap: 14px; padding: 22px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); }
+.key-form .control { display: block; }
+.key-input-row { display: flex; gap: 8px; }
+.key-input-row input { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; }
+.key-input-row input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.key-form > .btn.primary { min-height: 42px; font-weight: 700; }
+.key-form > .btn:disabled { opacity: .7; cursor: wait; }
+.key-status { margin: 18px 0 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+.key-status.success { color: var(--pos); background: rgba(53,194,107,.09); border-color: rgba(53,194,107,.3); }
+.key-status.error { color: #ffd6d6; background: rgba(255,107,107,.08); border-color: rgba(255,107,107,.35); }
+.key-status.pending { color: var(--muted); }
+.key-result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.key-detail { min-width: 0; padding: 13px 15px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: grid; gap: 5px; }
+.key-detail:first-child { grid-column: 1 / -1; }
+.key-detail:nth-child(6):last-child { grid-column: 1 / -1; }
+.key-detail-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.key-detail-value { font-family: var(--mono); font-weight: 600; font-size: 16px; overflow-wrap: anywhere; }
+.key-privacy { margin-top: 18px; text-align: center; font-size: 12px; }
+.key-privacy code { color: var(--text); }
+@media (max-width: 600px) {
+	.key-view { padding: 22px 12px; }
+	.key-form { padding: 16px; }
+	.key-result-grid { grid-template-columns: 1fr; }
+	.key-input-row .btn { padding-inline: 10px; }
+}

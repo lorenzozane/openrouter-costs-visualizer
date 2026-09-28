@@ -6,6 +6,7 @@ import { initFilters, populateModelFilter, applyFilters } from './components/fil
 import { initColumnFilterUI, setupTableSorting, renderTable, applyColumnVisibility } from './components/table.js';
 import { renderBarByModel, renderLineOverTime } from './components/charts.js';
 import { initAnalyticsView } from './components/analytics.js';
+import { initKeyChecker } from './components/key-checker.js';
 import { initDateControls } from './utils/dates.js';
 
 // KPIs + clear and render pipeline
@@ -126,6 +127,7 @@ function setupTooltips() {
 initDateControls();
 clearUI();
 const analyticsView = initAnalyticsView();
+initKeyChecker();
 initFilesControl(onFilesChanged, analyticsView.loadAnalyticsCSV);
 initFilters({ onApply: renderAll });
 initColumnFilterUI();

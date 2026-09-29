@@ -56,16 +56,14 @@ function render() {
 	const shown = rows.filter(row => (!query || row.model.toLowerCase().includes(query)) &&
 		(!from || row.date_utc >= from) && (!to || row.date_utc <= to));
 	byId('apiFilterEmpty').hidden = shown.length > 0;
-	byId('apiWorkspace').hidden = shown.length === 0;
-	if (!shown.length) {
-		modelChart?.destroy(); modelChart = null;
-		timeChart?.destroy(); timeChart = null;
-		return;
-	}
+	byId('apiTablePanel').hidden = shown.length === 0;
+	byId('apiCharts').hidden = shown.length === 0;
 
 	const requests = sum(shown, 'request_count');
 	const cost = sum(shown, 'total_usage');
-	const range = `${formatDisplayDate(shown[0].date_utc)} to ${formatDisplayDate(shown[shown.length - 1].date_utc)} UTC`;
+	const range = shown.length
+		? `${formatDisplayDate(shown[0].date_utc)} to ${formatDisplayDate(shown[shown.length - 1].date_utc)} UTC`
+		: 'No matching dates';
 	const summary = byId('apiSummary');
 	summary.replaceChildren();
 	for (const [label, value] of [
@@ -84,6 +82,11 @@ function render() {
 		number.textContent = value;
 		item.append(caption, number);
 		summary.append(item);
+	}
+	if (!shown.length) {
+		modelChart?.destroy(); modelChart = null;
+		timeChart?.destroy(); timeChart = null;
+		return;
 	}
 
 	const models = new Map();

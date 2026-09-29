@@ -131,34 +131,32 @@
 			</div>
 		</div>
 		<section class="api-connect" aria-labelledby="apiConnectHeading">
-			<div class="api-connect-copy">
+			<div class="api-connect-fields">
 				<h2 id="apiConnectHeading">Sync from OpenRouter</h2>
-				<p><strong>A management key has administrative access:</strong> it can create, edit, and delete API keys in your OpenRouter account. Create one with an expiration date. This open-source website runs in your browser, sends the key directly to OpenRouter for this sync, and does not save it. You can <a href="https://github.com/lorenzozane/openrouter-costs-visualizer" target="_blank" rel="noopener noreferrer">inspect the source code</a> and <a href="https://openrouter.ai/settings/management-keys" target="_blank" rel="noopener noreferrer">manage your keys at OpenRouter</a>.</p>
-				<p>You must enter the key again for another sync. Imported usage stays in this tab until you clear it, refresh, or close the tab; export a CSV to keep it.</p>
-				<p class="api-note">Up to 365 days per import. Large ranges are fetched in smaller parts. API results are daily aggregates, not individual requests.</p>
+				<form id="apiSyncForm" autocomplete="off">
+					<label class="control">Management key<input id="apiKey" type="password" autocomplete="off" spellcheck="false" required placeholder="Paste management key"></label>
+					<label class="control">From (UTC)<span class="date-input"><input id="apiFrom" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="From date (UTC), DD/MM/YYYY" required><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose From date (UTC)"></span></label>
+					<label class="control">To (UTC)<span class="date-input"><input id="apiTo" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="To date (UTC), DD/MM/YYYY" required><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose To date (UTC)"></span></label>
+					<div class="api-sync-actions">
+						<button id="apiSyncBtn" class="btn primary" type="submit">Sync data</button>
+						<button id="apiCancelBtn" class="btn" type="button" hidden>Cancel</button>
+					</div>
+				</form>
 			</div>
-			<form id="apiSyncForm" autocomplete="off">
-				<label class="control">Management key<input id="apiKey" type="password" autocomplete="off" spellcheck="false" required placeholder="Paste management key"></label>
-				<label class="control">From (UTC)<span class="date-input"><input id="apiFrom" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="From date (UTC), DD/MM/YYYY" required><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose From date (UTC)"></span></label>
-				<label class="control">To (UTC)<span class="date-input"><input id="apiTo" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="To date (UTC), DD/MM/YYYY" required><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose To date (UTC)"></span></label>
-				<div class="api-sync-actions">
-					<button id="apiSyncBtn" class="btn primary" type="submit">Sync data</button>
-					<button id="apiCancelBtn" class="btn" type="button" hidden>Cancel</button>
+			<aside class="api-connect-info" aria-labelledby="apiConnectInfoHeading">
+				<h2 id="apiConnectInfoHeading">Management key and privacy</h2>
+				<div class="api-connect-copy">
+					<p><strong>A management key can create, edit, and delete API keys.</strong> Use one with an expiration date. This open-source site sends it directly from your browser to OpenRouter for each sync and never stores it. You can <a href="https://github.com/lorenzozane/openrouter-costs-visualizer" target="_blank" rel="noopener noreferrer">inspect the source code</a> or <a href="https://openrouter.ai/settings/management-keys" target="_blank" rel="noopener noreferrer">manage your keys at OpenRouter</a>.</p>
+					<p>Re-enter the key for each sync. Usage disappears when you clear it, refresh, or close the tab; export a CSV to keep it. Syncs support up to 365 days in smaller parts. Results are daily aggregates, not individual requests.</p>
 				</div>
-			</form>
+			</aside>
 		</section>
 		<p id="apiStatus" class="api-status" role="status" aria-live="polite">No API data loaded. Sync or import an exported CSV.</p>
 		<div id="apiResults" hidden>
-			<div class="api-filters">
-				<label class="control">Filter models<input id="apiModelSearch" type="search" placeholder="Search models"></label>
-				<label class="control">From (UTC)<span class="date-input"><input id="apiFilterFrom" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="Filter from date (UTC), DD/MM/YYYY"><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose filter From date (UTC)"></span></label>
-				<label class="control">To (UTC)<span class="date-input"><input id="apiFilterTo" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="Filter to date (UTC), DD/MM/YYYY"><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose filter To date (UTC)"></span></label>
-				<button id="apiResetFilters" class="btn" type="button">Reset filters</button>
-			</div>
-			<p id="apiFilterEmpty" class="api-status" hidden>No matching daily model totals. Adjust the filters.</p>
 			<div id="apiWorkspace" class="api-workspace">
 				<div class="api-main">
-					<section class="api-table-panel" aria-labelledby="apiTableHeading">
+					<p id="apiFilterEmpty" class="api-status" hidden>No matching daily model totals. Adjust the filters.</p>
+					<section id="apiTablePanel" class="api-table-panel" aria-labelledby="apiTableHeading">
 						<div class="table-header"><h2 id="apiTableHeading">Costs by model</h2></div>
 						<div id="apiTableWrap" class="api-table-wrap"><table id="apiTable">
 							<thead><tr><th>Model</th><th>Requests</th><th>Total cost</th><th>OpenRouter credits</th><th>BYOK inference</th><th>Prompt tokens</th><th>Completion tokens</th><th>Reasoning tokens</th></tr></thead>
@@ -170,8 +168,18 @@
 						<div class="card"><h3>Cost over time (UTC)</h3><div class="chart-area"><canvas id="apiTimeChart"></canvas></div></div>
 					</div>
 				</div>
-				<aside class="api-summary-panel" aria-label="Analytics summary">
-					<div id="apiSummary" class="api-summary kpis"></div>
+				<aside class="api-sidebar" aria-label="Analytics filters and summary">
+					<section class="api-filter-panel" aria-labelledby="apiFilterHeading">
+						<div class="api-filter-heading"><h2 id="apiFilterHeading">Filters</h2><button id="apiResetFilters" class="btn mini" type="button">Reset</button></div>
+						<div class="api-filters">
+							<label class="control"><input id="apiModelSearch" type="search" aria-label="Filter models" placeholder="Filter models"></label>
+							<label class="control">From (UTC)<span class="date-input"><input id="apiFilterFrom" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="Filter from date (UTC), DD/MM/YYYY"><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose filter From date (UTC)"></span></label>
+							<label class="control">To (UTC)<span class="date-input"><input id="apiFilterTo" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off" aria-label="Filter to date (UTC), DD/MM/YYYY"><span class="date-picker-icon" aria-hidden="true">📅</span><input class="date-picker" type="date" aria-label="Choose filter To date (UTC)"></span></label>
+						</div>
+					</section>
+					<section id="apiSummaryPanel" class="api-summary-panel" aria-label="Analytics summary">
+						<div id="apiSummary" class="api-summary kpis"></div>
+					</section>
 				</aside>
 			</div>
 		</div>

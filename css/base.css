@@ -10,3 +10,4 @@ html, body {
 	display: flex;
 	flex-direction: column;
 }
+input, select { font: inherit; }
